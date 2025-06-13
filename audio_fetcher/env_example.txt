@@ -1,0 +1,53 @@
+# ======================================
+# Audio Fetcher Configuration
+# ======================================
+# Copy this file to .env and fill in your values
+
+# ======================================
+# Spotify API Configuration
+# ======================================
+# Get these from https://developer.spotify.com/dashboard/applications
+SPOTIPY_CLIENT_ID=your_spotify_client_id_here
+SPOTIPY_CLIENT_SECRET=your_spotify_client_secret_here
+SPOTIPY_REDIRECT_URI=http://localhost:8888/callback
+
+# Spotify Playlist ID to monitor
+# You can get this from the Spotify URL: https://open.spotify.com/playlist/PLAYLIST_ID
+SPOTIFY_PLAYLIST_ID=spotify:playlist:your_playlist_id_here
+
+# ======================================
+# Application Settings
+# ======================================
+# How often to check the playlist for new tracks (in minutes)
+POLL_INTERVAL_MINUTES=10
+
+# Download directory path (use /downloads for Docker)
+DOWNLOAD_PATH=/downloads
+
+# Server configuration
+HOST=0.0.0.0
+PORT=7860
+
+# ======================================
+# yt-dlp Download Settings
+# ======================================
+# Audio format selection
+YTDLP_FORMAT=bestaudio/best
+
+# Output audio format (mp3, m4a, wav, etc.)
+YTDLP_AUDIO_FORMAT=mp3
+
+# Audio quality (bitrate for mp3: 128, 192, 256, 320)
+YTDLP_AUDIO_QUALITY=192
+
+# ======================================
+# Logging Configuration
+# ======================================
+# Log level: DEBUG, INFO, WARNING, ERROR
+LOG_LEVEL=INFO
+
+# ======================================
+# Optional: Development Settings
+# ======================================
+# Set to true for development mode (shows detailed errors)
+DEBUG=false 

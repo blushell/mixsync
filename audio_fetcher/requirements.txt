@@ -1,0 +1,52 @@
+# Core web framework and async support
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Gradio for web interface
+gradio==4.7.1
+
+# Spotify API client
+spotipy==2.23.0
+
+# Audio downloading
+yt-dlp==2023.11.16
+
+# Audio processing (required by yt-dlp for conversion)
+ffmpeg-python==0.2.0
+
+# HTTP client for API requests
+httpx==0.25.2
+
+# Environment variable loading
+python-dotenv==1.0.0
+
+# Data validation and parsing
+pydantic==2.5.0
+
+# Async utilities
+asyncio-mqtt==0.16.1
+
+# File system utilities
+pathlib2==2.3.7
+
+# JSON handling
+orjson==3.9.10
+
+# Date and time utilities
+python-dateutil==2.8.2
+
+# Logging and monitoring
+structlog==23.2.0
+
+# Regular expressions
+regex==2023.10.3
+
+# URL parsing and validation
+validators==0.22.0
+
+# Optional: Development and testing dependencies
+# pytest==7.4.3
+# pytest-asyncio==0.21.1
+# black==23.11.0
+# flake8==6.1.0 

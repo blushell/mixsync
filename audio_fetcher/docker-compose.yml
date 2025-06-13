@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  audio_fetcher:
+    build: .
+    container_name: audio_fetcher
+    restart: unless-stopped
+    ports:
+      - '7860:7860'
+    environment:
+      # Spotify API Configuration (set these in .env file)
+      - SPOTIPY_CLIENT_ID=${SPOTIPY_CLIENT_ID}
+      - SPOTIPY_CLIENT_SECRET=${SPOTIPY_CLIENT_SECRET}
+      - SPOTIPY_REDIRECT_URI=${SPOTIPY_REDIRECT_URI:-http://localhost:8888/callback}
+      - SPOTIFY_PLAYLIST_ID=${SPOTIFY_PLAYLIST_ID}
+
+      # Application Settings
+      - POLL_INTERVAL_MINUTES=${POLL_INTERVAL_MINUTES:-10}
+      - DOWNLOAD_PATH=/downloads
+      - HOST=0.0.0.0
+      - PORT=7860
+
+      # yt-dlp Settings
+      - YTDLP_FORMAT=${YTDLP_FORMAT:-bestaudio/best}
+      - YTDLP_AUDIO_FORMAT=${YTDLP_AUDIO_FORMAT:-mp3}
+      - YTDLP_AUDIO_QUALITY=${YTDLP_AUDIO_QUALITY:-192}
+
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      # Mount downloads directory to persist files
+      - ./downloads:/downloads
+      # Mount Spotify cache to persist authentication
+      - ./.spotify_cache:/app/.spotify_cache
+      # Optional: Mount logs directory
+      - ./logs:/app/logs
+    networks:
+      - audio_fetcher_network
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:7860/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  audio_fetcher_network:
+    driver: bridge
+
+volumes:
+  downloads:
+    driver: local
+  spotify_cache:
+    driver: local
+  logs:
+    driver: local
