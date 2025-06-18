@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  audio-fetcher:
+    build: .
+    container_name: audio-fetcher
+    restart: unless-stopped
+
+    # Environment variables (you can also use .env file)
+    environment:
+      - SPOTIPY_CLIENT_ID=${SPOTIPY_CLIENT_ID}
+      - SPOTIPY_CLIENT_SECRET=${SPOTIPY_CLIENT_SECRET}
+      - SPOTIPY_REDIRECT_URI=${SPOTIPY_REDIRECT_URI:-http://localhost:8888/callback}
+      - SPOTIFY_PLAYLIST_ID=${SPOTIFY_PLAYLIST_ID}
+      - POLL_INTERVAL_MINUTES=${POLL_INTERVAL_MINUTES:-10}
+      - DOWNLOAD_PATH=/app/downloads
+
+    # Volumes for persistent data
+    volumes:
+      - ./downloads:/app/downloads
+      - ./config:/app/config
+      - ./.env:/app/.env:ro # Read-only .env file
+      - ./.spotify_cache:/app/.spotify_cache # Spotify auth cache
+
+    # Expose FastAPI web UI and API
+    ports:
+      - '8000:8000'
+
+    # Health check using FastAPI health endpoint
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
