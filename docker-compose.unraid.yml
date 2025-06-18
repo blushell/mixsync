@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  mixsync:
+    build:
+      context: .
+      dockerfile: Dockerfile.unraid
+    container_name: mixsync
+    restart: unless-stopped
+
+    # Unraid user permissions (standard Unraid nobody user)
+    environment:
+      - PUID=99
+      - PGID=100
+      - SPOTIPY_CLIENT_ID=${SPOTIPY_CLIENT_ID}
+      - SPOTIPY_CLIENT_SECRET=${SPOTIPY_CLIENT_SECRET}
+      - SPOTIPY_REDIRECT_URI=${SPOTIPY_REDIRECT_URI}
+      - SPOTIFY_PLAYLIST_ID=${SPOTIFY_PLAYLIST_ID}
+      - POLL_INTERVAL_MINUTES=${POLL_INTERVAL_MINUTES:-10}
+      - DOWNLOAD_PATH=/app/downloads
+
+    # Unraid-style volume mappings to appdata
+    volumes:
+      - /mnt/user/appdata/mixsync/downloads:/app/downloads
+      - /mnt/user/appdata/mixsync/config:/app/config
+      - /mnt/user/appdata/mixsync/.env:/app/.env:ro
+      - /mnt/user/appdata/mixsync/.spotify_cache:/app/.spotify_cache
+
+    # Network configuration
+    ports:
+      - '8000:8000'
+
+    # Health check for container monitoring
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+    # Labels for Unraid Docker management
+    labels:
+      - 'net.unraid.docker.managed=composeman'
+      - 'net.unraid.docker.webui=http://[IP]:[PORT:8000]'
+      - 'net.unraid.docker.icon=https://raw.githubusercontent.com/yourusername/MixSync/main/icon.png'

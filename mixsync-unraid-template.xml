@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>MixSync</Name>
+  <Repository>yourusername/mixsync</Repository>
+  <Registry>https://hub.docker.com/</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/yourusername/MixSync</Support>
+  <Project>https://github.com/yourusername/MixSync</Project>
+  <Overview>Automated Spotify playlist sync and manual audio downloads with web UI. Watches Spotify playlists and automatically downloads tracks using yt-dlp. Features a beautiful web interface for manual downloads from YouTube, SoundCloud, and other platforms.</Overview>
+  <Category>Downloaders:</Category>
+  <WebUI>http://[IP]:[PORT:8000]</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/yourusername/MixSync/main/mixsync-unraid-template.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/yourusername/MixSync/main/icon.png</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled>1640000000</DateInstalled>
+  <Description>
+    MixSync is a complete audio download solution that combines automated Spotify playlist synchronization with a beautiful web interface for manual downloads.
+    
+    Features:
+    • Automatically monitors Spotify playlists and downloads new tracks
+    • Modern web UI for manual downloads from YouTube, SoundCloud, etc.
+    • Real-time download progress and status
+    • Clean filename management using Spotify metadata
+    • Mobile-responsive design
+    • REST API with interactive documentation
+    
+    Perfect for music lovers who want automated playlist management with manual download capabilities!
+  </Description>
+  <Networking>
+    <Mode>bridge</Mode>
+    <Publish>
+      <Port>
+        <HostPort>8000</HostPort>
+        <ContainerPort>8000</ContainerPort>
+        <Protocol>tcp</Protocol>
+      </Port>
+    </Publish>
+  </Networking>
+  <Data>
+    <Volume>
+      <HostDir>/mnt/user/appdata/mixsync/downloads</HostDir>
+      <ContainerDir>/app/downloads</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/mnt/user/appdata/mixsync/config</HostDir>
+      <ContainerDir>/app/config</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/mnt/user/appdata/mixsync/.spotify_cache</HostDir>
+      <ContainerDir>/app/.spotify_cache</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/mnt/user/appdata/mixsync/.env</HostDir>
+      <ContainerDir>/app/.env</ContainerDir>
+      <Mode>ro</Mode>
+    </Volume>
+  </Data>
+  <Environment>
+    <Variable>
+      <Value>99</Value>
+      <Name>PUID</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>100</Value>
+      <Name>PGID</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value/>
+      <Name>SPOTIPY_CLIENT_ID</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value/>
+      <Name>SPOTIPY_CLIENT_SECRET</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>http://YOUR_UNRAID_IP:8888/callback</Value>
+      <Name>SPOTIPY_REDIRECT_URI</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value/>
+      <Name>SPOTIFY_PLAYLIST_ID</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>10</Value>
+      <Name>POLL_INTERVAL_MINUTES</Name>
+      <Mode/>
+    </Variable>
+  </Environment>
+  <Labels/>
+  
+  <!-- Port Configuration -->
+  <Config Name="WebUI Port" Target="8000" Default="8000" Mode="tcp" Description="Port for web interface and API access" Type="Port" Display="always" Required="true" Mask="false">8000</Config>
+  
+  <!-- Volume Configurations -->
+  <Config Name="Downloads Directory" Target="/app/downloads" Default="/mnt/user/appdata/mixsync/downloads" Mode="rw" Description="Directory where downloaded audio files are saved" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/mixsync/downloads</Config>
+  
+  <Config Name="Config Directory" Target="/app/config" Default="/mnt/user/appdata/mixsync/config" Mode="rw" Description="Application configuration and logs" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/mixsync/config</Config>
+  
+  <Config Name="Spotify Cache" Target="/app/.spotify_cache" Default="/mnt/user/appdata/mixsync/.spotify_cache" Mode="rw" Description="Spotify authentication cache (auto-created)" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/mixsync/.spotify_cache</Config>
+  
+  <Config Name="Environment File" Target="/app/.env" Default="/mnt/user/appdata/mixsync/.env" Mode="ro" Description="Environment configuration file (create from env_unraid_example.txt)" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/mixsync/.env</Config>
+  
+  <!-- User Permissions -->
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="User ID for file permissions (Unraid default: 99)" Type="Variable" Display="always" Required="true" Mask="false">99</Config>
+  
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Group ID for file permissions (Unraid default: 100)" Type="Variable" Display="always" Required="true" Mask="false">100</Config>
+  
+  <!-- Spotify Configuration -->
+  <Config Name="Spotify Client ID" Target="SPOTIPY_CLIENT_ID" Default="" Mode="" Description="Your Spotify application client ID from developer.spotify.com" Type="Variable" Display="always" Required="true" Mask="false"></Config>
+  
+  <Config Name="Spotify Client Secret" Target="SPOTIFY_CLIENT_SECRET" Default="" Mode="" Description="Your Spotify application client secret" Type="Variable" Display="always" Required="true" Mask="true"></Config>
+  
+  <Config Name="Spotify Redirect URI" Target="SPOTIPY_REDIRECT_URI" Default="http://YOUR_UNRAID_IP:8888/callback" Mode="" Description="OAuth callback URL - Replace YOUR_UNRAID_IP with your server IP" Type="Variable" Display="always" Required="true" Mask="false">http://YOUR_UNRAID_IP:8888/callback</Config>
+  
+  <Config Name="Spotify Playlist ID" Target="SPOTIFY_PLAYLIST_ID" Default="" Mode="" Description="Spotify playlist URI to sync (format: spotify:playlist:xxxxx)" Type="Variable" Display="always" Required="true" Mask="false"></Config>
+  
+  <!-- Application Settings -->
+  <Config Name="Poll Interval" Target="POLL_INTERVAL_MINUTES" Default="10" Mode="" Description="Minutes between playlist checks for new tracks" Type="Variable" Display="always" Required="false" Mask="false">10</Config>
+</Container> 

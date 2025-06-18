@@ -1,21 +1,21 @@
-# MixSync - Complete Audio Download Solution
+# MixSync - Automated Audio Download Solution
 
-A complete audio fetcher application with both **automated playlist sync** and **manual web downloads**.
+A complete audio fetcher application with **automated Spotify playlist sync** and **manual web downloads**.
 
-## Features
+## 🌟 Features
 
-### 🎵 Playlist Sync (Automated)
+### 🎵 Automated Playlist Sync
 
-- Watches a Spotify playlist for new tracks
+- Watches Spotify playlists for new tracks
 - Automatically downloads audio using yt-dlp (YouTube search)
 - Removes tracks from playlist after successful download
 - Configurable polling interval
-- Uses clean Spotify track names for files
+- Clean, consistent filenames from Spotify metadata
 
-### 🌐 Web UI (Manual Downloads)
+### 🌐 Web UI for Manual Downloads
 
-- Beautiful, modern web interface at `http://localhost:8000`
-- Download audio from any supported platform (YouTube, SoundCloud, etc.)
+- Beautiful, modern web interface
+- Download from YouTube, SoundCloud, and other platforms
 - Custom filename support
 - Real-time download progress
 - Mobile-responsive design
@@ -23,338 +23,260 @@ A complete audio fetcher application with both **automated playlist sync** and *
 ### 🚀 API & Monitoring
 
 - FastAPI backend with REST endpoints
-- Comprehensive monitoring and status endpoints
+- Health checks and status monitoring
 - Interactive API documentation at `/docs`
 
-## Setup
+## 🚀 Quick Start
 
-### 1. Install Dependencies
-
-```bash
-cd audio_fetcher
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-**Optional: Use a virtual environment (recommended for isolation)**
+### Option 1: Docker (Recommended)
 
 ```bash
-# Create a virtual environment
-python -m venv audio_fetcher_env
-source audio_fetcher_env/bin/activate  # On Windows: audio_fetcher_env\Scripts\activate
-pip install --upgrade pip
-pip install -r requirements.txt
+# 1. Clone and setup
+git clone <your-repo-url>
+cd MixSync
+
+# 2. Configure environment
+cp env_example.txt .env
+# Edit .env with your Spotify credentials
+
+# 3. Run with Docker
+docker-compose up -d
+
+# 4. Access web UI
+# http://localhost:8000
 ```
 
-### 2. Spotify API Setup
+### Option 2: Unraid Docker Setup
+
+See the [Unraid Setup Guide](#unraid-setup) below for complete instructions.
+
+### Option 3: Python Direct
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment
+cp env_example.txt .env
+# Edit .env with your credentials
+
+# Run the application
+python -m app.main
+```
+
+## 🔧 Configuration
+
+### 1. Spotify API Setup
 
 1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
 2. Create a new app
 3. Get your `Client ID` and `Client Secret`
-4. Add `http://localhost:8888/callback` to your app's redirect URIs
+4. Add `http://localhost:8888/callback` to redirect URIs
 
-### 3. Environment Configuration
+### 2. Environment Variables
 
-1. Copy the example environment file:
+```env
+SPOTIPY_CLIENT_ID=your_spotify_client_id
+SPOTIPY_CLIENT_SECRET=your_spotify_client_secret
+SPOTIPY_REDIRECT_URI=http://localhost:8888/callback
+SPOTIFY_PLAYLIST_ID=spotify:playlist:your_playlist_id
+POLL_INTERVAL_MINUTES=10
+DOWNLOAD_PATH=./downloads
+```
+
+### 3. Get Your Playlist ID
+
+1. Open Spotify → Your playlist
+2. Click "Share" → "Copy Spotify URI"
+3. Use the full URI: `spotify:playlist:37i9dQZF1DXcBWIGoYBM5M`
+
+## 🐳 Unraid Setup
+
+### Method 1: Using Docker Compose
+
+1. **Prepare directories:**
 
    ```bash
-   cp env_example.txt .env
+   mkdir -p /mnt/user/appdata/mixsync/{downloads,config}
    ```
 
-2. Edit `.env` with your credentials:
-   ```
-   SPOTIPY_CLIENT_ID=your_spotify_client_id
-   SPOTIPY_CLIENT_SECRET=your_spotify_client_secret
-   SPOTIPY_REDIRECT_URI=http://localhost:8888/callback
-   SPOTIFY_PLAYLIST_ID=spotify:playlist:your_playlist_id
-   POLL_INTERVAL_MINUTES=10
-   DOWNLOAD_PATH=./downloads
+2. **Create environment file:**
+
+   ```bash
+   # Copy your configured .env to:
+   /mnt/user/appdata/mixsync/.env
    ```
 
-### 4. Get Your Playlist ID
+3. **Use the Unraid docker-compose:**
+   ```bash
+   docker-compose -f docker-compose.unraid.yml up -d
+   ```
 
-1. Open Spotify and go to your playlist
-2. Click "Share" → "Copy Spotify URI"
-3. The URI looks like: `spotify:playlist:37i9dQZF1DXcBWIGoYBM5M`
-4. Use the full URI in your `.env` file
+### Method 2: Unraid Docker UI
 
-## Running the Application
+**Container Settings:**
 
-### Option 1: Docker (Recommended for Production)
+- **Name**: `mixsync`
+- **Repository**: `your-dockerhub/mixsync` or build locally
+- **Network**: `Bridge`
+- **WebUI**: `http://[IP]:[PORT:8000]`
 
-The easiest way to run the complete application is with Docker, which includes FFmpeg automatically:
+**Port Mappings:**
+
+- Container: `8000` → Host: `8000`
+
+**Volume Mappings:**
+
+```
+/mnt/user/appdata/mixsync/downloads → /app/downloads
+/mnt/user/appdata/mixsync/config → /app/config
+/mnt/user/appdata/mixsync/.spotify_cache → /app/.spotify_cache
+/mnt/user/appdata/mixsync/.env → /app/.env
+```
+
+**Environment Variables:**
+
+```
+PUID=99
+PGID=100
+SPOTIPY_CLIENT_ID=your_client_id
+SPOTIPY_CLIENT_SECRET=your_client_secret
+SPOTIPY_REDIRECT_URI=http://YOUR_UNRAID_IP:8888/callback
+SPOTIFY_PLAYLIST_ID=spotify:playlist:your_playlist_id
+POLL_INTERVAL_MINUTES=10
+```
+
+### Method 3: Community Applications Template
+
+Install the MixSync template from Unraid's Community Applications for the easiest setup.
+
+## 📱 Usage
+
+### Automated Sync
+
+1. Add tracks to your configured Spotify playlist
+2. MixSync automatically detects and downloads them
+3. Tracks are removed from playlist after successful download
+
+### Manual Downloads
+
+1. Visit `http://localhost:8000` (or your Unraid IP)
+2. Paste any media URL (YouTube, SoundCloud, etc.)
+3. Optional: Set custom filename
+4. Click download and watch progress
+
+### API Access
+
+- **Web UI**: `http://localhost:8000`
+- **API Docs**: `http://localhost:8000/docs`
+- **Health Check**: `http://localhost:8000/health`
+
+## 🎵 Audio Quality & Formats
+
+- **Default**: Downloads best available audio format
+- **With FFmpeg**: Converts to MP3 (192kbps)
+- **Filenames**: Clean format using Spotify metadata
+  - Example: `Artist - Track Name.mp3`
+
+## 🔧 API Endpoints
+
+| Endpoint           | Method | Description            |
+| ------------------ | ------ | ---------------------- |
+| `/`                | GET    | Web UI                 |
+| `/health`          | GET    | Health check           |
+| `/docs`            | GET    | API documentation      |
+| `/playlist/info`   | GET    | Playlist information   |
+| `/playlist/tracks` | GET    | All tracks in playlist |
+| `/playlist/new`    | GET    | New tracks to download |
+| `/sync`            | POST   | Manual sync trigger    |
+| `/status`          | GET    | Application status     |
+| `/download`        | POST   | Manual download        |
+
+## 🏃‍♂️ Running Options
+
+### Docker (Production)
 
 ```bash
-# 1. Set up your .env file first
-cp env_example.txt .env
-# Edit .env with your Spotify credentials
-
-# 2. Run with Docker Compose
 docker-compose up -d
-
-# 3. Access the application
-# Web UI: http://localhost:8000
-# API docs: http://localhost:8000/docs
-
-# 4. Check logs
-docker-compose logs -f
-
-# 5. Stop
-docker-compose down
 ```
 
-**Docker Benefits:**
+**Benefits:** Complete setup, auto-restart, health checks
 
-- ✅ **Complete application**: Auto-sync + Web UI + API in one container
-- ✅ **FFmpeg included**: No additional setup needed
-- ✅ **Persistent data**: Downloads and auth cache preserved
-- ✅ **Auto-restart**: Restarts automatically if container crashes
-- ✅ **Health monitoring**: Built-in health checks
-- ✅ **Easy management**: Simple start/stop/update
-
-#### Alternative Docker Commands
+### Python Scripts
 
 ```bash
-# Build and run manually
-docker build -t audio-fetcher .
-docker run -d --name audio-fetcher \
-  --env-file .env \
-  -p 8000:8000 \
-  -v $(pwd)/downloads:/app/downloads \
-  -v $(pwd)/.spotify_cache:/app/.spotify_cache \
-  audio-fetcher
+# Full web application
+python -m app.main
 
-# View logs
-docker logs -f audio-fetcher
-
-# Access web UI: http://localhost:8000
-
-# Stop
-docker stop audio-fetcher
-```
-
-### Option 2: Continuous Running (Python Direct)
-
-#### Quiet Mode (Recommended)
-
-```bash
-cd audio_fetcher
-python run_quiet.py
-```
-
-#### Verbose Mode (for debugging)
-
-```bash
-cd audio_fetcher
+# Continuous sync only (no web UI)
 python run_continuous.py
-```
 
-Both will:
+# Quiet mode
+python run_quiet.py
 
-- Run continuously in the background
-- Automatically download new tracks
-- Log all activity to `mixsync.log` and console
-- No user prompts - fully automated
-
-**Quiet mode** shows only important events, **verbose mode** shows all download details.
-
-### Option 2: Simple Test Script
-
-Run the test script to verify everything is working:
-
-```bash
-cd audio_fetcher
+# One-time test
 python test_sync.py
 ```
 
-This script will:
+## 🔍 Troubleshooting
 
-- Validate your configuration
-- Connect to Spotify
-- Show playlist information
-- List tracks to be downloaded
-- Ask if you want to proceed with sync (interactive)
+### Spotify Authentication
 
-### Option 3: Full Web Application (Recommended)
-
-Start the complete application with both playlist sync AND web UI:
-
-```bash
-cd audio_fetcher
-python -m app.main
-```
-
-Or with uvicorn for development:
-
-```bash
-cd audio_fetcher
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-Then visit:
-
-- **`http://localhost:8000/`** - 🌐 **Web UI for manual downloads**
-- `http://localhost:8000/docs` - 📚 Interactive API documentation
-- `http://localhost:8000/api` - 📊 API info and status
-
-### Available API Endpoints
-
-- `http://localhost:8000/health` - Health check
-- `http://localhost:8000/playlist/info` - Playlist information
-- `http://localhost:8000/playlist/tracks` - All tracks
-- `http://localhost:8000/playlist/new` - New tracks to download
-- `http://localhost:8000/sync` - Manual sync trigger (POST)
-- `http://localhost:8000/status` - Application status
-- `http://localhost:8000/download` - Manual download (POST)
-- `http://localhost:8000/download/info` - Get media info (GET)
-
-## How It Works
-
-### 🔄 Automated Playlist Sync
-
-1. **Startup**: App connects to Spotify and starts monitoring
-2. **Monitoring**: Every `POLL_INTERVAL_MINUTES`, checks for new tracks
-3. **Download**: For each new track:
-   - Formats search query: "Artist - Track Name"
-   - Searches YouTube using yt-dlp
-   - Downloads the first result and saves with clean Spotify filename
-4. **Cleanup**: Removes successfully downloaded tracks from playlist
-5. **Repeat**: Continues monitoring for new tracks
-
-### 🌐 Manual Web Downloads
-
-1. **Access**: Visit `http://localhost:8000` in your browser
-2. **Input**: Paste any supported media URL (YouTube, SoundCloud, etc.)
-3. **Customize**: Optionally set a custom filename
-4. **Download**: Click download and watch real-time progress
-5. **Complete**: Files saved to your configured download directory
-
-## Downloads
-
-- Files are saved to the `DOWNLOAD_PATH` directory (default: `./downloads`)
-- **Without FFmpeg**: Downloads in original format (usually .m4a, .webm, or .opus)
-- **With FFmpeg**: Converts to MP3, 192K bitrate
-- **Filename**: Uses clean Spotify track information for consistent, readable filenames
-
-### Filename Sources
-
-**Primary (Spotify-based)**: For playlist sync, files are named using the original Spotify track information:
-
-- Format: `Artist - Track Name`
-- Examples:
-  - `Jessica Audiffred - Don't Speak (feat. GG Magree)`
-  - `ATLiens - BLACK SHEEP (feat. GG MAGREE)`
-  - `Post Malone - Congratulations ft. Quavo`
-
-**Fallback (YouTube title cleaning)**: For manual downloads or when Spotify info isn't available:
-
-- Automatically removes YouTube video metadata like "[Official Music Video]", "(Official Audio)", etc.
-- Examples:
-  - `ATLiens - BLACK SHEEP (feat. GG MAGREE) [Official Music Video]` → `ATLiens - BLACK SHEEP (feat. GG MAGREE)`
-  - `Post Malone - Congratulations ft. Quavo (Official Video)` → `Post Malone - Congratulations ft. Quavo`
-
-### Installing FFmpeg (Optional)
-
-FFmpeg is **optional** but recommended for consistent MP3 output:
-
-- **Windows**: Download from [FFmpeg builds](https://www.gyan.dev/ffmpeg/builds/)
-- **macOS**: `brew install ffmpeg`
-- **Ubuntu/Debian**: `sudo apt install ffmpeg`
-
-The app works fine without FFmpeg - you'll just get audio in whatever format YouTube provides.
-
-## Authentication
-
-On first run, you'll be redirected to Spotify for authorization. This creates a `.spotify_cache` file to store your token.
-
-## Logging
-
-The application logs all activities including:
-
-- Spotify connections
-- Track discoveries
-- Download attempts
-- Successes and failures
-
-## API Endpoints
-
-### GET `/`
-
-Basic application information
-
-### GET `/health`
-
-Health check - returns 200 if Spotify is connected
-
-### GET `/playlist/info`
-
-Information about your configured playlist
-
-### GET `/playlist/tracks`
-
-All tracks currently in the playlist
-
-### GET `/playlist/new`
-
-Tracks that haven't been processed yet
-
-### POST `/sync`
-
-Manually trigger a sync operation
-
-### GET `/status`
-
-Application status and statistics
-
-### GET `/config`
-
-Current configuration (sensitive data excluded)
-
-## Troubleshooting
-
-### Spotify Authentication Issues
-
-- Make sure your redirect URI is exactly: `http://localhost:8888/callback`
-- Check that your Client ID and Secret are correct
-- Delete `.spotify_cache` file and re-authenticate
+- Ensure redirect URI is exactly: `http://localhost:8888/callback`
+- For Unraid, use your server IP: `http://YOUR_UNRAID_IP:8888/callback`
+- Delete `.spotify_cache` and re-authenticate if needed
 
 ### Download Issues
 
-- Ensure you have FFmpeg installed for audio conversion
-- Check that the download directory exists and is writable
-- Some tracks might not be found on YouTube
+- Check internet connection and YouTube availability
+- Ensure download directory has write permissions
+- Some tracks may not be found on YouTube
 
-### Permission Issues
+### Unraid Specific
 
-- Make sure your Spotify app has the correct scopes
-- You need to be able to modify the playlist (owner or collaborative)
+- Use PUID=99 and PGID=100 for proper permissions
+- Ensure appdata directory exists and is accessible
+- Check Docker logs in Unraid UI for errors
 
-## ✨ What's New in V2
+## 📁 File Structure
 
-- **🌐 Beautiful Web UI**: Modern, responsive interface for manual downloads
-- **📱 Mobile Support**: Works perfectly on phones and tablets
-- **🎨 Custom Filenames**: Set your own filenames for downloads
-- **⚡ Real-time Progress**: Live download status and feedback
-- **🔗 Universal Support**: Download from any yt-dlp supported platform
-- **🚀 Zero Setup**: Just start the app and visit localhost:8000
-- **🐳 Docker Ready**: Complete application runs perfectly in Docker
+```
+MixSync/
+├── app/
+│   ├── main.py              # FastAPI app & startup
+│   ├── web_ui.py           # Gradio web interface
+│   ├── spotify_watcher.py   # Playlist monitoring
+│   ├── downloader.py        # yt-dlp download logic
+│   ├── utils.py             # Helper functions
+│   └── config.py            # Configuration management
+├── docker-compose.yml       # Standard Docker setup
+├── docker-compose.unraid.yml # Unraid-optimized setup
+├── Dockerfile              # Container definition
+├── Dockerfile.unraid       # Unraid-optimized container
+├── requirements.txt        # Python dependencies
+├── run_continuous.py       # Continuous sync script
+├── run_quiet.py           # Quiet mode script
+└── test_sync.py           # Test/validation script
+```
 
-The complete application now includes both automated playlist monitoring AND a beautiful web interface for manual downloads!
+## 🎯 What's New
 
-## 🚀 Deployment Options
+- **🌐 Modern Web UI**: Beautiful interface for manual downloads
+- **📱 Mobile Responsive**: Works on all devices
+- **🐳 Unraid Ready**: Optimized for Unraid Docker
+- **⚡ Real-time Progress**: Live download feedback
+- **🔄 Auto-restart**: Resilient container management
+- **🎨 Clean Filenames**: Consistent, readable file naming
 
-| Option | Use Case | Features | Resource Usage |
-| --- | --- | --- | --- |
-| **Docker** | Production, easy deployment | Auto-sync + Web UI + API | Medium |
-| **FastAPI App** | Development, home server | Auto-sync + Web UI + API | Medium |
-| **Lightweight Scripts** | Headless servers, VPS | Auto-sync only | Minimal |
-| **Test Script** | One-time testing | Interactive sync | Minimal |
+## 📦 Dependencies
 
-## Dependencies
+- **FastAPI** - Modern web framework
+- **Gradio** - Web UI components
+- **spotipy** - Spotify API client
+- **yt-dlp** - Universal media downloader
+- **uvicorn** - ASGI server
+- **python-dotenv** - Environment management
 
-- `fastapi` - Web framework
-- `spotipy` - Spotify API client
-- `yt-dlp` - YouTube downloader
-- `uvicorn` - ASGI server
-- `python-dotenv` - Environment variable management
-- `APScheduler` - Task scheduling
+---
+
+**🎵 Perfect for music lovers who want automated playlist management with a beautiful web interface! 🎵**
