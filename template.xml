@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>MixSync</Name>
+  <Repository>ghcr.io/blushell/mixsync:latest</Repository>
+  <Registry>https://ghcr.io</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/blushell/mixsync</Support>
+  <Project>https://github.com/blushell/mixsync</Project>
+  <Overview>MixSync - Automated Audio Download Solution with Spotify playlist sync and manual web downloads. Automatically watches Spotify playlists for new tracks and downloads audio using yt-dlp. Features a beautiful web UI for manual downloads from YouTube, SoundCloud and other platforms.</Overview>
+  <Category>MediaApp:Music</Category>
+  <WebUI>http://[IP]:[PORT:8000]</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/blushell/mixsync/main/mixsync-unraid-template.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/blushell/mixsync/main/assets/icon.png</Icon>
+  <ExtraParams>--health-cmd="curl -f http://localhost:8000/health || exit 1" --health-interval=30s --health-timeout=10s --health-retries=3</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Description>MixSync - Automated Audio Download Solution with Spotify playlist sync and manual web downloads. Automatically watches Spotify playlists for new tracks and downloads audio using yt-dlp. Features a beautiful web UI for manual downloads from YouTube, SoundCloud and other platforms.</Description>
+  <Networking>
+    <Mode>bridge</Mode>
+    <Publish>
+      <Port>
+        <HostPort>8000</HostPort>
+        <ContainerPort>8000</ContainerPort>
+        <Protocol>tcp</Protocol>
+      </Port>
+    </Publish>
+  </Networking>
+  <Data>
+    <Volume>
+      <HostDir>/mnt/user/appdata/mixsync/downloads</HostDir>
+      <ContainerDir>/app/downloads</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/mnt/user/appdata/mixsync/config</HostDir>
+      <ContainerDir>/app/config</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/mnt/user/appdata/mixsync/.spotify_cache</HostDir>
+      <ContainerDir>/app/.spotify_cache</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+  </Data>
+  <Environment>
+    <Variable>
+      <Value>99</Value>
+      <Name>PUID</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>100</Value>
+      <Name>PGID</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value/>
+      <Name>SPOTIPY_CLIENT_ID</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value/>
+      <Name>SPOTIPY_CLIENT_SECRET</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>http://YOUR_UNRAID_IP:8888/callback</Value>
+      <Name>SPOTIPY_REDIRECT_URI</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value/>
+      <Name>SPOTIFY_PLAYLIST_ID</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>10</Value>
+      <Name>POLL_INTERVAL_MINUTES</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>/app/downloads</Value>
+      <Name>DOWNLOAD_PATH</Name>
+      <Mode/>
+    </Variable>
+  </Environment>
+  <Labels/>
+  <Config Name="Web UI Port" Target="8000" Default="8000" Mode="tcp" Description="Port for the web interface" Type="Port" Display="always" Required="true" Mask="false">8000</Config>
+  <Config Name="Downloads Directory" Target="/app/downloads" Default="/mnt/user/appdata/mixsync/downloads" Mode="rw" Description="Directory where downloaded audio files will be stored" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/mixsync/downloads</Config>
+  <Config Name="Config Directory" Target="/app/config" Default="/mnt/user/appdata/mixsync/config" Mode="rw" Description="Directory for configuration files" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/mixsync/config</Config>
+  <Config Name="Spotify Cache Directory" Target="/app/.spotify_cache" Default="/mnt/user/appdata/mixsync/.spotify_cache" Mode="rw" Description="Directory for Spotify authentication cache" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/mixsync/.spotify_cache</Config>
+  <Config Name="User ID" Target="PUID" Default="99" Mode="" Description="User ID for file permissions (99 = nobody)" Type="Variable" Display="always" Required="true" Mask="false">99</Config>
+  <Config Name="Group ID" Target="PGID" Default="100" Mode="" Description="Group ID for file permissions (100 = users)" Type="Variable" Display="always" Required="true" Mask="false">100</Config>
+  <Config Name="Spotify Client ID" Target="SPOTIPY_CLIENT_ID" Default="" Mode="" Description="Your Spotify API Client ID (get from Spotify Developer Dashboard)" Type="Variable" Display="always" Required="true" Mask="false"></Config>
+  <Config Name="Spotify Client Secret" Target="SPOTIPY_CLIENT_SECRET" Default="" Mode="" Description="Your Spotify API Client Secret (get from Spotify Developer Dashboard)" Type="Variable" Display="always" Required="true" Mask="true"></Config>
+  <Config Name="Spotify Redirect URI" Target="SPOTIPY_REDIRECT_URI" Default="http://YOUR_UNRAID_IP:8888/callback" Mode="" Description="Spotify OAuth redirect URI (replace YOUR_UNRAID_IP with your server IP)" Type="Variable" Display="always" Required="true" Mask="false">http://YOUR_UNRAID_IP:8888/callback</Config>
+  <Config Name="Spotify Playlist ID" Target="SPOTIFY_PLAYLIST_ID" Default="" Mode="" Description="Spotify playlist ID in format: spotify:playlist:XXXXXXXXX" Type="Variable" Display="always" Required="true" Mask="false"></Config>
+  <Config Name="Poll Interval" Target="POLL_INTERVAL_MINUTES" Default="10" Mode="" Description="How often to check for new tracks (in minutes)" Type="Variable" Display="always" Required="false" Mask="false">10</Config>
+  <Config Name="Download Path" Target="DOWNLOAD_PATH" Default="/app/downloads" Mode="" Description="Internal download path (should match container path)" Type="Variable" Display="advanced" Required="false" Mask="false">/app/downloads</Config>
+</Container>

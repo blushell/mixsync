@@ -1,21 +1,14 @@
-# MixSync Environment Configuration for Unraid
-# Copy this file to /mnt/user/appdata/mixsync/.env and configure with your values
-
-# Spotify API Credentials (get from https://developer.spotify.com/dashboard)
+# Spotify API Configuration
 SPOTIPY_CLIENT_ID=your_spotify_client_id
 SPOTIPY_CLIENT_SECRET=your_spotify_client_secret
-
-# Spotify OAuth Redirect URI - IMPORTANT: Use your Unraid server IP
-# Replace YOUR_UNRAID_IP with your actual Unraid server IP address
+# Change YOUR_UNRAID_IP to your actual Unraid server IP
 SPOTIPY_REDIRECT_URI=http://YOUR_UNRAID_IP:8888/callback
-
-# Spotify Playlist to sync (get from Spotify -> Share -> Copy Spotify URI)
 SPOTIFY_PLAYLIST_ID=spotify:playlist:your_playlist_id
 
-# Download settings
+# Application Configuration
 POLL_INTERVAL_MINUTES=10
 DOWNLOAD_PATH=/app/downloads
 
-# Unraid user permissions (standard Unraid defaults)
+# Unraid User/Group IDs (typically 99/100 for nobody/users)
 PUID=99
 PGID=100 

@@ -32,8 +32,8 @@ A complete audio fetcher application with **automated Spotify playlist sync** an
 
 ```bash
 # 1. Clone and setup
-git clone <your-repo-url>
-cd MixSync
+git clone https://github.com/blushell/mixsync.git
+cd mixsync
 
 # 2. Configure environment
 cp env_example.txt .env
@@ -42,8 +42,20 @@ cp env_example.txt .env
 # 3. Run with Docker
 docker-compose up -d
 
-# 4. Access web UI
-# http://localhost:8000
+# 4. Access web UI at http://localhost:8000
+```
+
+**Alternative: Use pre-built image**
+
+```bash
+# Pull and run the latest image
+docker run -d \
+  --name mixsync \
+  -p 8000:8000 \
+  -v $(pwd)/downloads:/app/downloads \
+  -v $(pwd)/.env:/app/.env:ro \
+  --restart unless-stopped \
+  ghcr.io/blushell/mixsync:latest
 ```
 
 ### Option 2: Unraid Docker Setup
@@ -117,7 +129,7 @@ DOWNLOAD_PATH=./downloads
 **Container Settings:**
 
 - **Name**: `mixsync`
-- **Repository**: `your-dockerhub/mixsync` or build locally
+- **Repository**: `ghcr.io/blushell/mixsync:latest`
 - **Network**: `Bridge`
 - **WebUI**: `http://[IP]:[PORT:8000]`
 
@@ -201,6 +213,28 @@ docker-compose up -d
 ```
 
 **Benefits:** Complete setup, auto-restart, health checks
+
+## 🐳 Docker Information
+
+### Available Images
+
+- **Standard**: `ghcr.io/blushell/mixsync:latest` - Standard Docker image
+- **Unraid**: `ghcr.io/blushell/mixsync:unraid` - Optimized for Unraid with PUID/PGID support
+
+### Building Locally
+
+```bash
+# Standard image
+docker build -t mixsync:local .
+
+# Unraid image
+docker build -f Dockerfile.unraid -t mixsync:unraid .
+```
+
+### Docker Compose Files
+
+- `docker-compose.yml` - Standard deployment
+- `docker-compose.unraid.yml` - Unraid-optimized deployment
 
 ### Python Scripts
 

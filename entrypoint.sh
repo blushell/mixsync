@@ -1,34 +1,38 @@
 #!/bin/bash
 
-# Unraid entrypoint script for proper user permissions
+# Default values
+PUID=${PUID:-1000}
+PGID=${PGID:-1000}
 
-# Set user and group IDs from environment (Unraid defaults)
-PUID=${PUID:-99}
-PGID=${PGID:-100}
-
-echo "Setting up user permissions..."
-echo "PUID: $PUID"
-echo "PGID: $PGID"
+echo "Starting MixSync with UID: $PUID and GID: $PGID"
 
 # Create group if it doesn't exist
 if ! getent group $PGID > /dev/null 2>&1; then
-    groupadd -g $PGID mixsync
+    groupadd -g $PGID appuser
 fi
 
 # Create user if it doesn't exist
 if ! getent passwd $PUID > /dev/null 2>&1; then
-    useradd -u $PUID -g $PGID -d /app -s /bin/bash mixsync
+    useradd -u $PUID -g $PGID -d /app -s /bin/bash appuser
 fi
 
-# Ensure proper ownership of directories
-echo "Setting up directory permissions..."
-chown -R $PUID:$PGID /app/downloads 2>/dev/null || true
-chown -R $PUID:$PGID /app/config 2>/dev/null || true
-chown -R $PUID:$PGID /app/.spotify_cache 2>/dev/null || true
-chmod -R 755 /app/downloads 2>/dev/null || true
-chmod -R 755 /app/config 2>/dev/null || true
+# Ensure directories exist and have correct permissions
+mkdir -p /app/downloads /app/config /app/.spotify_cache
+chown -R $PUID:$PGID /app/downloads /app/config /app/.spotify_cache
 
-echo "Starting MixSync as user ID $PUID..."
+# If .env file doesn't exist, create from environment variables
+if [ ! -f /app/.env ] && [ -n "$SPOTIPY_CLIENT_ID" ]; then
+    echo "Creating .env file from environment variables..."
+    cat > /app/.env << EOF
+SPOTIPY_CLIENT_ID=${SPOTIPY_CLIENT_ID}
+SPOTIPY_CLIENT_SECRET=${SPOTIPY_CLIENT_SECRET}
+SPOTIPY_REDIRECT_URI=${SPOTIPY_REDIRECT_URI:-http://localhost:8888/callback}
+SPOTIFY_PLAYLIST_ID=${SPOTIFY_PLAYLIST_ID}
+POLL_INTERVAL_MINUTES=${POLL_INTERVAL_MINUTES:-10}
+DOWNLOAD_PATH=${DOWNLOAD_PATH:-./downloads}
+EOF
+    chown $PUID:$PGID /app/.env
+fi
 
-# Execute the main command as the correct user
+# Execute the command as the specified user
 exec gosu $PUID:$PGID "$@" 

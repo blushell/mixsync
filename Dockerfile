@@ -12,11 +12,10 @@ ENV PYTHONDONTWRITEBYTECODE=1
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     curl \
-    gosu \
     && rm -rf /var/lib/apt/lists/*
 
-# Create application directories
-RUN mkdir -p /app/downloads /app/config /app/.spotify_cache
+# Create downloads directory
+RUN mkdir -p /app/downloads
 
 # Copy requirements first for better Docker layer caching
 COPY requirements.txt .
@@ -29,17 +28,11 @@ COPY app/ ./app/
 COPY run_continuous.py .
 COPY run_quiet.py .
 COPY test_sync.py .
-COPY entrypoint.sh /entrypoint.sh
 
-# Make entrypoint executable
-RUN chmod +x /entrypoint.sh
-
-# Create default user and group IDs (will be overridden by PUID/PGID)
-RUN groupadd -g 1000 appuser && \
-    useradd -u 1000 -g 1000 -d /app -s /bin/bash appuser
-
-# Set permissions
-RUN chown -R appuser:appuser /app
+# Create non-root user for security
+RUN useradd -r -s /bin/false -m -d /app/user appuser && \
+    chown -R appuser:appuser /app
+USER appuser
 
 # Expose port
 EXPOSE 8000
@@ -47,9 +40,6 @@ EXPOSE 8000
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
-
-# Use entrypoint script
-ENTRYPOINT ["/entrypoint.sh"]
 
 # Default command
 CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"] 
