@@ -1,4 +1,4 @@
-# Audio Fetcher - Complete Audio Download Solution
+# MixSync - Complete Audio Download Solution
 
 A complete audio fetcher application with both **automated playlist sync** and **manual web downloads**.
 
